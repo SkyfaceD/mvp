@@ -1,4 +1,4 @@
-package org.skyfaced.mvp.mvp;
+package org.skyfaced.mvp.mvp.own;
 
 import androidx.annotation.NonNull;
 

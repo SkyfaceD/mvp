@@ -11,9 +11,9 @@ import androidx.viewbinding.ViewBinding;
 
 import com.google.android.material.snackbar.Snackbar;
 
-import org.skyfaced.mvp.mvp.BaseView;
-import org.skyfaced.mvp.mvp.Presenter;
-import org.skyfaced.mvp.mvp.View;
+import org.skyfaced.mvp.mvp.own.BaseView;
+import org.skyfaced.mvp.mvp.own.Presenter;
+import org.skyfaced.mvp.mvp.own.View;
 
 public abstract class BaseMVPActivity<
         VB extends ViewBinding,

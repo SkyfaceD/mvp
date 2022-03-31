@@ -1,6 +1,6 @@
 package org.skyfaced.mvp.ui;
 
-import org.skyfaced.mvp.mvp.BaseView;
+import org.skyfaced.mvp.mvp.own.BaseView;
 
 import java.util.List;
 

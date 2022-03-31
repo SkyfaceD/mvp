@@ -1,4 +1,4 @@
-package org.skyfaced.mvp.mvp;
+package org.skyfaced.mvp.mvp.own;
 
 public interface Presenter<T extends View> {
     void onAttach(T view);

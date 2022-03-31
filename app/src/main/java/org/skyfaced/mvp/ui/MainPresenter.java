@@ -2,7 +2,7 @@ package org.skyfaced.mvp.ui;
 
 import android.util.Log;
 
-import org.skyfaced.mvp.mvp.BasePresenter;
+import org.skyfaced.mvp.mvp.own.BasePresenter;
 import org.skyfaced.mvp.network.NetworkService;
 
 import java.util.Collections;
