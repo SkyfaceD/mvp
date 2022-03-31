@@ -8,22 +8,34 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.bumptech.glide.Glide;
+
 import org.skyfaced.mvp.databinding.ActivityMainBinding;
-import org.skyfaced.mvp.network.NetworkService;
-import org.skyfaced.mvp.network.NetworkServiceImpl;
+import org.skyfaced.mvp.model.ImageDto;
+import org.skyfaced.mvp.service.instant.InstantService;
+import org.skyfaced.mvp.service.instant.InstantServiceImpl;
+import org.skyfaced.mvp.service.network.AppNetwork;
+import org.skyfaced.mvp.service.network.WaifuRepository;
+import org.skyfaced.mvp.service.network.WaifuRepositoryImpl;
+import org.skyfaced.mvp.service.network.WaifuService;
 import org.skyfaced.mvp.ui.base.BaseMVPActivity;
 import org.skyfaced.mvp.util.TextWatcherMediator;
+import org.skyfaced.mvp.util.WaifuType;
 
 import java.util.List;
+import java.util.Random;
 
 public final class MainActivity extends BaseMVPActivity<ActivityMainBinding, MainPresenter, MainView> implements MainView {
-    private MainAdapter adapter;
+    private SimpleAdapter simpleAdapter;
+    private WaifuAdapter waifuAdapter;
 
     @NonNull
     @Override
     protected MainPresenter setupPresenter() {
-        NetworkService networkService = new NetworkServiceImpl();
-        return new MainPresenter(networkService);
+        WaifuService waifuService = AppNetwork.getInstance().waifuService;
+        WaifuRepository waifuRepository = new WaifuRepositoryImpl(waifuService);
+        InstantService instantService = new InstantServiceImpl();
+        return new MainPresenter(waifuRepository, instantService);
     }
 
     @NonNull
@@ -56,17 +68,42 @@ public final class MainActivity extends BaseMVPActivity<ActivityMainBinding, Mai
 
         getBinding().btnMessage.setOnClickListener(v -> getPresenter().onMessageClick());
 
-        adapter = new MainAdapter(getPresenter()::onItemClick);
-        getBinding().recycler.setAdapter(adapter);
-        updateRecycler(getPresenter().listOfStrings());
+        simpleAdapter = new SimpleAdapter(getPresenter()::onItemClick);
+        getBinding().recycler.setAdapter(simpleAdapter);
+        updateSimpleRecycler(getPresenter().strings());
+
+        getBinding().btnLoadWaifu.setOnClickListener(v -> {
+            Integer index = new Random().nextInt(WaifuType.SFW.Category.values().length);
+            WaifuType.SFW.Category category = WaifuType.SFW.Category.values()[index];
+            getPresenter().onWaifuClick(new WaifuType.SFW(category));
+        });
+
+        waifuAdapter = new WaifuAdapter(getPresenter()::onWaifuItemClick);
+        getBinding().recyclerWaifu.setAdapter(waifuAdapter);
+
+        getBinding().btnLoadWaifus.setOnClickListener(v -> {
+            Integer index = new Random().nextInt(WaifuType.SFW.Category.values().length);
+            WaifuType.SFW.Category category = WaifuType.SFW.Category.values()[index];
+            getPresenter().onWaifusClick(new WaifuType.SFW(category));
+        });
     }
 
     /************
      * ViewImpl *
      ************/
     @Override
-    public void updateRecycler(List<String> items) {
-        adapter.submitList(items);
+    public void updateSimpleRecycler(List<String> items) {
+        simpleAdapter.submitList(items);
+    }
+
+    @Override
+    public void updateWaifu(ImageDto image) {
+        Glide.with(this).load(image.getUrl()).into(getBinding().imgWaifu);
+    }
+
+    @Override
+    public void updateWaifuRecycler(List<ImageDto> images) {
+        waifuAdapter.submitList(images);
     }
 
     @Override

@@ -4,8 +4,11 @@ import androidx.annotation.NonNull;
 
 import java.lang.ref.WeakReference;
 
+import io.reactivex.rxjava3.disposables.Disposable;
+
 public abstract class BasePresenter<T extends View> implements Presenter<T> {
     private WeakReference<T> viewReference = null;
+    private Disposable disposable = Disposable.empty();
 
     @NonNull
     protected T getView() {

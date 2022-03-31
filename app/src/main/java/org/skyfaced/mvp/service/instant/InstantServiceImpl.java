@@ -1,9 +1,9 @@
-package org.skyfaced.mvp.network;
+package org.skyfaced.mvp.service.instant;
 
 import java.util.Arrays;
 import java.util.List;
 
-public class NetworkServiceImpl implements NetworkService {
+public class InstantServiceImpl implements InstantService {
     @Override
     public List<String> listOfStrings() {
         return Arrays.asList(

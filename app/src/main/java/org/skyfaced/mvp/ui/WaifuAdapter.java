@@ -7,22 +7,26 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.skyfaced.mvp.databinding.ItemBinding;
+import com.bumptech.glide.Glide;
 
+import org.skyfaced.mvp.databinding.ItemWaifuBinding;
+import org.skyfaced.mvp.model.ImageDto;
+
+import java.util.Arrays;
 import java.util.List;
 
-public final class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHolder> {
+public final class WaifuAdapter extends RecyclerView.Adapter<WaifuAdapter.ViewHolder> {
     private final OnClickListener onClickListener;
-    public List<String> currentList;
+    public List<ImageDto> currentList = Arrays.asList();
 
-    public MainAdapter(OnClickListener onClickListener) {
+    public WaifuAdapter(OnClickListener onClickListener) {
         this.onClickListener = onClickListener;
     }
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        ItemBinding binding = ItemBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
+        ItemWaifuBinding binding = ItemWaifuBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
         return new ViewHolder(binding);
     }
 
@@ -37,28 +41,28 @@ public final class MainAdapter extends RecyclerView.Adapter<MainAdapter.ViewHold
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    public void submitList(List<String> items) {
+    public void submitList(List<ImageDto> items) {
         currentList = items;
         notifyDataSetChanged();
     }
 
     public interface OnClickListener {
-        void onClick(String item);
+        void onClick(ImageDto item);
     }
 
-    public final class ViewHolder extends RecyclerView.ViewHolder {
-        private final ItemBinding binding;
-        private String item;
+    protected final class ViewHolder extends RecyclerView.ViewHolder {
+        private final ItemWaifuBinding binding;
+        private ImageDto item;
 
-        public ViewHolder(ItemBinding binding) {
+        public ViewHolder(ItemWaifuBinding binding) {
             super(binding.getRoot());
             this.binding = binding;
             this.binding.getRoot().setOnClickListener(v -> onClickListener.onClick(item));
         }
 
-        public void bind(String text) {
-            item = text;
-            binding.getRoot().setText(text);
+        public void bind(ImageDto image) {
+            item = image;
+            Glide.with(binding.getRoot()).load(image.getUrl()).into(binding.getRoot());
         }
     }
 }

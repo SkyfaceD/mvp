@@ -32,18 +32,41 @@
             android:text="Show toast/snack"
             app:backgroundTint="@android:color/holo_red_dark" />
 
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:orientation="vertical"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:listitem="@layout/item" />
+
+        <ImageView
+            android:id="@+id/img_waifu"
+            android:layout_width="match_parent"
+            android:layout_height="400dp"
+            android:layout_margin="16dp" />
+
+        <Button
+            android:id="@+id/btn_load_waifu"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:text="Load waifu" />
+
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="16dp">
+            android:layout_marginVertical="16dp">
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recycler"
+                android:id="@+id/recycler_waifu"
                 android:layout_width="match_parent"
-                android:layout_height="150dp"
-                android:orientation="vertical"
+                android:layout_height="200dp"
+                android:orientation="horizontal"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                tools:listitem="@layout/item" />
+                tools:listitem="@layout/item_waifu" />
 
             <ProgressBar
                 android:id="@+id/progress"
@@ -55,13 +78,13 @@
         </FrameLayout>
 
         <Button
-            android:id="@+id/btn_load"
+            android:id="@+id/btn_load_waifus"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
             android:insetTop="0dp"
             android:insetBottom="0dp"
-            android:text="Load data" />
+            android:text="Load waifus" />
 
     </LinearLayout>
 
