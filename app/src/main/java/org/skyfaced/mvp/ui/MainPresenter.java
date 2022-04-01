@@ -9,15 +9,17 @@ import org.skyfaced.mvp.util.WaifuType;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
-import io.reactivex.rxjava3.annotations.NonNull;
-import io.reactivex.rxjava3.core.Observer;
+import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import timber.log.Timber;
 
 public final class MainPresenter extends BasePresenter<MainView> {
+    private final CompositeDisposable disposable = new CompositeDisposable();
+
     private final WaifuRepository waifuRepository;
     private final InstantService instantService;
 
@@ -50,34 +52,16 @@ public final class MainPresenter extends BasePresenter<MainView> {
     }
 
     void onWaifuClick(WaifuType type) {
-        getView().showOnScreenLoader();
-        waifuRepository.waifu(type)
+        Disposable d = waifuRepository.waifu(type)
+                .debounce(300, TimeUnit.MILLISECONDS)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        new Observer<ImageDto>() {
-                            @Override
-                            public void onSubscribe(@NonNull Disposable d) {
-                            }
-
-                            @Override
-                            public void onNext(@NonNull ImageDto image) {
-                                getView().updateWaifu(image);
-                            }
-
-                            @Override
-                            public void onError(@NonNull Throwable e) {
-                                getView().showSnackbar(e.getMessage());
-                                getView().hideOnScreenLoader();
-                            }
-
-                            @Override
-                            public void onComplete() {
-                                getView().showToast("Вайфу загружена");
-                                getView().hideOnScreenLoader();
-                            }
-                        }
+                        image -> getView().updateWaifu(image),
+                        cause -> getView().showSnackbar(cause.getMessage()),
+                        () -> getView().showToast("Вайфу загружена")
                 );
+        disposable.add(d);
     }
 
     void onWaifuItemClick(ImageDto image) {
@@ -85,29 +69,28 @@ public final class MainPresenter extends BasePresenter<MainView> {
     }
 
     void onWaifusClick(WaifuType type) {
-        waifuRepository.waifus(type)
+        getView().showOnScreenLoader();
+        Disposable d = waifuRepository.waifus(type)
+                .debounce(300, TimeUnit.MILLISECONDS)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<List<ImageDto>>() {
-                    @Override
-                    public void onSubscribe(@NonNull Disposable d) {
+                .subscribe(
+                        images -> getView().updateWaifuRecycler(images),
+                        cause -> {
+                            getView().showSnackbar(cause.getMessage());
+                            getView().hideOnScreenLoader();
+                        },
+                        () -> {
+                            getView().showToast("Вайфу загружены");
+                            getView().hideOnScreenLoader();
+                        }
+                );
+        disposable.add(d);
+    }
 
-                    }
-
-                    @Override
-                    public void onNext(@NonNull List<ImageDto> images) {
-                        getView().updateWaifuRecycler(images);
-                    }
-
-                    @Override
-                    public void onError(@NonNull Throwable e) {
-                        getView().showSnackbar(e.getMessage());
-                    }
-
-                    @Override
-                    public void onComplete() {
-                        getView().showToast("Вайфу загружены");
-                    }
-                });
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        disposable.clear();
     }
 }
