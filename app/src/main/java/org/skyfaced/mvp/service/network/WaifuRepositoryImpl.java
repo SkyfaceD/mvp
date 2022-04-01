@@ -5,7 +5,7 @@ import org.skyfaced.mvp.model.ImageDto;
 import org.skyfaced.mvp.util.WaifuType;
 
 import java.util.List;
-import java.util.concurrent.TimeUnit;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 import io.reactivex.rxjava3.core.Observable;
@@ -20,9 +20,8 @@ public class WaifuRepositoryImpl implements WaifuRepository {
     @Override
     public Observable<ImageDto> waifu(WaifuType type) {
         return waifuService.waifu(type.getName(), type.getCategory())
-                .delay(300, TimeUnit.MILLISECONDS)
                 .doOnEach(imageDtoNotification -> {
-                    throw new IllegalArgumentException();
+                    if (new Random().nextInt() % 2 == 0) throw new IllegalArgumentException();
                 })
                 .distinct();
     }

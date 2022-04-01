@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
+import javax.inject.Inject;
+
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.disposables.Disposable;
@@ -25,6 +27,7 @@ public final class MainPresenter extends MvpPresenter<MainView> {
     private final WaifuRepository waifuRepository;
     private final InstantService instantService;
 
+    @Inject
     public MainPresenter(WaifuRepository waifuRepository, InstantService instantService) {
         this.waifuRepository = waifuRepository;
         this.instantService = instantService;

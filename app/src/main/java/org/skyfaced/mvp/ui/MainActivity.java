@@ -12,12 +12,6 @@ import com.bumptech.glide.Glide;
 
 import org.skyfaced.mvp.databinding.ActivityMainBinding;
 import org.skyfaced.mvp.model.ImageDto;
-import org.skyfaced.mvp.service.instant.InstantService;
-import org.skyfaced.mvp.service.instant.InstantServiceImpl;
-import org.skyfaced.mvp.service.network.AppNetwork;
-import org.skyfaced.mvp.service.network.WaifuRepository;
-import org.skyfaced.mvp.service.network.WaifuRepositoryImpl;
-import org.skyfaced.mvp.service.network.WaifuService;
 import org.skyfaced.mvp.ui.base.BaseActivity;
 import org.skyfaced.mvp.util.TextWatcherMediator;
 import org.skyfaced.mvp.util.WaifuType;
@@ -25,10 +19,17 @@ import org.skyfaced.mvp.util.WaifuType;
 import java.util.List;
 import java.util.Random;
 
+import javax.inject.Inject;
+import javax.inject.Provider;
+
+import dagger.hilt.android.AndroidEntryPoint;
 import moxy.presenter.InjectPresenter;
 import moxy.presenter.ProvidePresenter;
 
+@AndroidEntryPoint
 public final class MainActivity extends BaseActivity<ActivityMainBinding> implements MainView {
+    @Inject
+    Provider<MainPresenter> presenterProvider;
     @InjectPresenter
     MainPresenter presenter;
 
@@ -43,10 +44,7 @@ public final class MainActivity extends BaseActivity<ActivityMainBinding> implem
 
     @ProvidePresenter
     protected MainPresenter setupPresenter() {
-        WaifuService waifuService = AppNetwork.getInstance().waifuService;
-        WaifuRepository waifuRepository = new WaifuRepositoryImpl(waifuService);
-        InstantService instantService = new InstantServiceImpl();
-        return new MainPresenter(waifuRepository, instantService);
+        return presenterProvider.get();
     }
 
     @Override

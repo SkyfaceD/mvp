@@ -11,6 +11,7 @@ import timber.log.Timber;
 
 public final class AppNetwork {
     private static AppNetwork instance;
+
     public final WaifuService waifuService = retrofit("https://api.waifu.pics/").create(WaifuService.class);
     public final JikanService jikanService = retrofit("https://api.jikan.moe/v4/").create(JikanService.class);
 
