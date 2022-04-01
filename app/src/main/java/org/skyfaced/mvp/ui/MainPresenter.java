@@ -1,7 +1,6 @@
 package org.skyfaced.mvp.ui;
 
 import org.skyfaced.mvp.model.ImageDto;
-import org.skyfaced.mvp.mvp.own.BasePresenter;
 import org.skyfaced.mvp.service.instant.InstantService;
 import org.skyfaced.mvp.service.network.WaifuRepository;
 import org.skyfaced.mvp.util.WaifuType;
@@ -15,9 +14,12 @@ import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
+import moxy.InjectViewState;
+import moxy.MvpPresenter;
 import timber.log.Timber;
 
-public final class MainPresenter extends BasePresenter<MainView> {
+@InjectViewState
+public final class MainPresenter extends MvpPresenter<MainView> {
     private final CompositeDisposable disposable = new CompositeDisposable();
 
     private final WaifuRepository waifuRepository;
@@ -33,15 +35,15 @@ public final class MainPresenter extends BasePresenter<MainView> {
     }
 
     void onItemClick(String item) {
-        getView().showSnackbar("Hello from presenter\n" + item);
+        getViewState().showSnackbar("Hello from presenter\n" + item);
     }
 
     void onMessageClick() {
         Integer random = new Random().nextInt();
         if (random % 2 == 0) {
-            getView().showSnackbar(random + " from snack");
+            getViewState().showSnackbar(random + " from snack");
         } else {
-            getView().showToast(random + " from toast");
+            getViewState().showToast(random + " from toast");
         }
     }
 
@@ -57,32 +59,32 @@ public final class MainPresenter extends BasePresenter<MainView> {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        image -> getView().updateWaifu(image),
-                        cause -> getView().showSnackbar(cause.getMessage()),
-                        () -> getView().showToast("Вайфу загружена")
+                        image -> getViewState().updateWaifu(image),
+                        cause -> getViewState().showSnackbar(cause.getMessage()),
+                        () -> getViewState().showToast("Вайфу загружена")
                 );
         disposable.add(d);
     }
 
     void onWaifuItemClick(ImageDto image) {
-        getView().showSnackbar(image.getUrl());
+        getViewState().showSnackbar(image.getUrl());
     }
 
     void onWaifusClick(WaifuType type) {
-        getView().showOnScreenLoader();
+        getViewState().showOnScreenLoader();
         Disposable d = waifuRepository.waifus(type)
                 .debounce(300, TimeUnit.MILLISECONDS)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        images -> getView().updateWaifuRecycler(images),
+                        images -> getViewState().updateWaifuRecycler(images),
                         cause -> {
-                            getView().showSnackbar(cause.getMessage());
-                            getView().hideOnScreenLoader();
+                            getViewState().showSnackbar(cause.getMessage());
+                            getViewState().hideOnScreenLoader();
                         },
                         () -> {
-                            getView().showToast("Вайфу загружены");
-                            getView().hideOnScreenLoader();
+                            getViewState().showToast("Вайфу загружены");
+                            getViewState().hideOnScreenLoader();
                         }
                 );
         disposable.add(d);
@@ -90,7 +92,6 @@ public final class MainPresenter extends BasePresenter<MainView> {
 
     @Override
     public void onDestroy() {
-        super.onDestroy();
         disposable.clear();
     }
 }
