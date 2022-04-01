@@ -5,8 +5,10 @@ import org.skyfaced.mvp.util.WaifuType;
 
 import java.util.List;
 
-public interface WaifuRepository {
-    ImageDto waifu(WaifuType type);
+import io.reactivex.rxjava3.core.Observable;
 
-    List<ImageDto> waifus(WaifuType type);
+public interface WaifuRepository {
+    Observable<ImageDto> waifu(WaifuType type);
+
+    Observable<List<ImageDto>> waifus(WaifuType type);
 }

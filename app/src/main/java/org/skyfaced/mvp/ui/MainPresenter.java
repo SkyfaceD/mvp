@@ -10,6 +10,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.annotations.NonNull;
+import io.reactivex.rxjava3.core.Observer;
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 import timber.log.Timber;
 
 public final class MainPresenter extends BasePresenter<MainView> {
@@ -45,7 +50,34 @@ public final class MainPresenter extends BasePresenter<MainView> {
     }
 
     void onWaifuClick(WaifuType type) {
-        getView().updateWaifu(waifuRepository.waifu(type));
+        getView().showOnScreenLoader();
+        waifuRepository.waifu(type)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        new Observer<ImageDto>() {
+                            @Override
+                            public void onSubscribe(@NonNull Disposable d) {
+                            }
+
+                            @Override
+                            public void onNext(@NonNull ImageDto image) {
+                                getView().updateWaifu(image);
+                            }
+
+                            @Override
+                            public void onError(@NonNull Throwable e) {
+                                getView().showSnackbar(e.getMessage());
+                                getView().hideOnScreenLoader();
+                            }
+
+                            @Override
+                            public void onComplete() {
+                                getView().showToast("Вайфу загружена");
+                                getView().hideOnScreenLoader();
+                            }
+                        }
+                );
     }
 
     void onWaifuItemClick(ImageDto image) {
@@ -53,6 +85,29 @@ public final class MainPresenter extends BasePresenter<MainView> {
     }
 
     void onWaifusClick(WaifuType type) {
-        getView().updateWaifuRecycler(waifuRepository.waifus(type));
+        waifuRepository.waifus(type)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<List<ImageDto>>() {
+                    @Override
+                    public void onSubscribe(@NonNull Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onNext(@NonNull List<ImageDto> images) {
+                        getView().updateWaifuRecycler(images);
+                    }
+
+                    @Override
+                    public void onError(@NonNull Throwable e) {
+                        getView().showSnackbar(e.getMessage());
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        getView().showToast("Вайфу загружены");
+                    }
+                });
     }
 }
